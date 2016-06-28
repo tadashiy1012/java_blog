@@ -30,10 +30,21 @@ public class BlogRcs {
 
   @GET
   @Path("entries")
-  public Response entries() {
+  public Response getEntries() {
     final String sql = "SELECT b FROM Blog b ORDER BY b.id DESC";
     final List<Blog> list = this.em.createQuery(sql, Blog.class)
       .getResultList();
     return Response.ok(gson.toJson(list)).build();
+  }
+
+  @POST
+  @Path("entries")
+  public Response postEntry(String data) {
+    Blog entry = this.gson.fromJson(data, Blog.class);
+    EntityTransaction tx = this.em.getTransaction();
+    tx.begin();
+    this.em.persist(entry);
+    tx.commit();
+    return Response.ok("ok").build();
   }
 }
